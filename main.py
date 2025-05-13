@@ -21,7 +21,7 @@ app.add_middleware(
 def read_root():
     return {"message": "Welcome to FastAPI!"}
 
-@app.post("baggage/scan", response_model=schemas.BagScanOut)
+@app.post("/baggage/scan", response_model=schemas.BagScanOut)
 async def add_bag_scan(scan: schemas.BagScanCreate, db: AsyncSession):
     return await crud.create_bag_scan(db, scan)
 
@@ -34,4 +34,6 @@ async def get_scans_for_bag(bag_tag_id: str, latest: bool = False, db: AsyncSess
         return scan
     return crud.get_scans_by_bag_tag(db, bag_tag_id)
 
-
+@app.get("/baggage/scans/gate/{destination_gate}", response_model=list[schemas.BagScanOut])
+async def get_scans_for_gate(destination_gate: str, db: AsyncSession = Depends(get_db)):
+    return await crud.get_scan_by_gate(db, destination_gate)
